@@ -1,7 +1,4 @@
 const tableCustomers = document.getElementById("customers");
-const divFilters = document.getElementById("filters");
-let formFilters = createFilters();
-divFilters.appendChild(formFilters);
 const url = 'https://api.myjson.com/bins/1eyqeh';
 let allData = null;
 fetch(url)
@@ -18,7 +15,7 @@ function createHeader(customer, showDiscount) {
   const { _id, eventID, index, guid, ...noIDs } = customer;
   for (const key of Object.keys(noIDs)) {
     let th = document.createElement('th');
-    th.innerHTML = capitalizeWord(key);
+    th.innerHTML = createTitle(key);
     tableHeader.appendChild(th);
   }
   if (showDiscount) {
@@ -41,6 +38,7 @@ function fillTable(showDiscount) {
     customers.map(customer => {
       const { _id, eventID, index, guid, ...noIDs } = customer;
       let tr = document.createElement('tr');
+      let style = "background-color: #c2f263";
       spanCount = Object.keys(noIDs).length;
       for (const key of Object.keys(noIDs)) {
         let td = document.createElement('td');
@@ -48,14 +46,19 @@ function fillTable(showDiscount) {
           if (noIDs[key]) {
             td.innerHTML = '&#10003';
           } else {
+            style = "background-color: #b3c0d3";
             td.innerHTML = 'x';
           }
         } else if (key === 'registered') {
           let date = new Date(noIDs[key].replace(' ', ''));
           td.innerHTML = date.toLocaleString();
+        } else if (key === 'balance' && (parseFloat(customer['balance'].replace(',', '')) < 0)) {
+          style = "background-color: #ed3434";
+          td.innerHTML = noIDs[key];
         } else {
           td.innerHTML = noIDs[key];
         }
+        tr.setAttribute("style", style);
         tr.appendChild(td);
       }
       totalBalance = parseFloat(totalBalance) + parseFloat(noIDs['balance'].replace(',', ''));
@@ -70,6 +73,7 @@ function fillTable(showDiscount) {
     let trTotal = document.createElement('tr');
     let tdBalance = document.createElement('td');
     tdBalance.setAttribute("colspan", spanCount);
+    tdBalance.setAttribute("style", "font-weight: 700");
     tdBalance.innerHTML = "TOTAL BALANCE: " + totalBalance.toLocaleString();
     trTotal.appendChild(tdBalance);
     tableCustomers.appendChild(trTotal);
@@ -82,56 +86,10 @@ function fillTable(showDiscount) {
   }
 }
 
-function createFilters() {
-  let formFilters = document.createElement('form');
-
-  let inputAll = document.createElement('input');
-  let labelAll = document.createElement('label');
-  let spanAll = document.createElement('span');
-  spanAll.innerHTML = "All";
-  inputAll.setAttribute("id", "filterAll");
-  inputAll.setAttribute("type", "radio");
-  inputAll.setAttribute("name", "filter");
-  inputAll.setAttribute("value", "all");
-  inputAll.setAttribute("checked", true);
-  inputAll.setAttribute("onchange", "fillTable(false)");
-  labelAll.appendChild(inputAll);
-  labelAll.appendChild(spanAll);
-  formFilters.appendChild(labelAll);
-
-  let inputInsolvent = document.createElement('input');
-  let labelInsolvent = document.createElement('label');
-  let spanInsolvent = document.createElement('span');
-  spanInsolvent.innerHTML = "Insolvent";
-  inputInsolvent.setAttribute("id", "filterInsolvent");
-  inputInsolvent.setAttribute("type", "radio");
-  inputInsolvent.setAttribute("name", "filter");
-  inputInsolvent.setAttribute("value", "insolvent");
-  inputInsolvent.setAttribute("onchange", "fillTable(false)");
-  labelInsolvent.appendChild(inputInsolvent);
-  labelInsolvent.appendChild(spanInsolvent);
-  formFilters.appendChild(labelInsolvent);
-
-  let inputInactive = document.createElement('input');
-  let labelInactive = document.createElement('label');
-  let spanInactive = document.createElement('span');
-  spanInactive.innerHTML = "Inactive";
-  inputInactive.setAttribute("id", "filterInactive");
-  inputInactive.setAttribute("type", "radio");
-  inputInactive.setAttribute("name", "filter");
-  inputInactive.setAttribute("value", "inactive");
-  inputInactive.setAttribute("onchange", "fillTable(true)");
-  labelInactive.appendChild(inputInactive);
-  labelInactive.appendChild(spanInactive);
-  formFilters.appendChild(labelInactive);
-
-  return formFilters;
-}
-
 function applyFilter(data) {
   const customers = data;
   let filter = document.getElementById("filterAll");
-  if (filter.checked) {
+  if (filter.checked || customers == null) {
     return customers;
   } else {
     filter = document.getElementById("filterInsolvent");
@@ -146,6 +104,6 @@ function applyFilter(data) {
   }
 }
 
-function capitalizeWord(word) {
-  return (word.charAt(0).toUpperCase() + word.substr(1));
+function createTitle(text) {
+  return text.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, function(str){ return str.toUpperCase(); });
 }
