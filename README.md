@@ -5,6 +5,7 @@ Filters on the top of the table control which data is being shown, current optio
 - All customers
 - Insolvent customers (customers with negative balance)
 - Inactive customers
+
 Total balance is calculated for the filtered data. So, if the table shows inactive customers, total balance of inactive customers is being shown, etc.
 When inactive customers are shown, additional field appears at the end of the row - Discount.
 The colour of the customer's row also indicates it's status, it's green for the customer who is active and his balance is positive, it is gray for the customer 
