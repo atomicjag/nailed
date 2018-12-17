@@ -15,3 +15,4 @@ Perhaps redux could be introduced to store the data, and react as the view libra
 Also, a search field can be added to search for specific customers, by name, email, company, balance, etc.
 Ordering of the customers in the table can be added, as well as some additional filters (above/below certain amount of balance).
 Pagination should be introduced as well.
+Watson Assistant might also be useful, as well as the Knowledge Catalog and Personality Insights.
